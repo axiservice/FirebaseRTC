@@ -1,7 +1,5 @@
 {
   "projects": {
-    "default": "fir-rtc-89b99",
-    "webRTC": "provacontainer001"
-  },
-  "targets": {}
+    "default": "myrtcvideochat"
+  }
 }
