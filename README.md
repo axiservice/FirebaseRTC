@@ -8,12 +8,18 @@ The solution to this codelab can be seen in the _solution_ branch.
 See http://webrtc.org for details.
 
 # SETUP PROJECT
+``` bash
 npm install -g firebase-tools
 firebase login 
 firebase init database
+``` 
 
 # RUN FIREBASE LOCALLY
-firebase serve 
+``` bash
+firebase serve
+``` 
 
 # FIREBASE DEPLOY 
+``` bash
 firebase deploy 
+``` 
