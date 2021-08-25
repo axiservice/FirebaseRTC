@@ -18,6 +18,8 @@ let remoteStream = null;
 let roomDialog = null;
 let roomId = null;
 
+let queryString = null;
+
 function init() {
   document.querySelector('#cameraBtn').addEventListener('click', openUserMedia);
   document.querySelector('#hangupBtn').addEventListener('click', hangUp);
@@ -67,9 +69,10 @@ async function createRoom() {
   };
   await roomRef.set(roomWithOffer);
   roomId = roomRef.id;
+  callUrlBase = "https://myrtcvideochat.web.app/?ch=";
   console.log(`New room created with SDP offer. Room ID: ${roomRef.id}`);
   document.querySelector(
-      '#currentRoom').innerText = `Current room is ${roomRef.id} - You are the caller!`;
+      '#currentRoom').innerHTML = `Current room URL is: <a href="${callUrlBase}${roomRef.id}" target="_blank">Copia ed invia questo link</a> - Tu sei il chiamante!`;
   // Code for creating a room above
 
   peerConnection.addEventListener('track', event => {
@@ -197,6 +200,19 @@ async function openUserMedia(e) {
   document.querySelector('#joinBtn').disabled = false;
   document.querySelector('#createBtn').disabled = false;
   document.querySelector('#hangupBtn').disabled = false;
+
+  queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+
+  if(urlParams){
+    _roomId = urlParams.get('ch');
+    console.log("_roomId:"+_roomId);
+    if(_roomId){
+      document.querySelector('#createBtn').disabled = true;
+      document.querySelector('#joinBtn').disabled = true;
+      joinRoomById(_roomId);
+    }
+  }
 }
 
 async function hangUp(e) {
@@ -222,7 +238,10 @@ async function hangUp(e) {
   document.querySelector('#currentRoom').innerText = '';
 
   // Delete room on hangup
-  if (roomId) {
+  const urlParams = new URLSearchParams(window.location.search);
+  if(urlParams) _roomId = urlParams.get('ch');
+  
+  if (roomId && !_roomId) {
     const db = firebase.firestore();
     const roomRef = db.collection('rooms').doc(roomId);
     const calleeCandidates = await roomRef.collection('calleeCandidates').get();
