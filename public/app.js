@@ -211,8 +211,28 @@ async function openUserMedia(e) {
       document.querySelector('#createBtn').disabled = true;
       document.querySelector('#joinBtn').disabled = true;
       joinRoomById(_roomId);
+    } else {
+        const db = firebase.firestore();
+        const r = await db.collection('rooms').limit(1).get().then(qs => {
+          if(!qs.empty){
+            joinRoomById(qs.docs[0].id);
+          }
+        });
+        //r.forEach((doc) => {
+        //  console.log(doc.id);
+        //})
+        if(r){
+          console.log(r.f.id);
+
+        } else {
+          createRoom();
+        }
     }
   }
+}
+
+function testLogger(message){
+  console.log("LOGGER: "+message);
 }
 
 async function hangUp(e) {
@@ -241,7 +261,7 @@ async function hangUp(e) {
   const urlParams = new URLSearchParams(window.location.search);
   if(urlParams) _roomId = urlParams.get('ch');
   
-  if (roomId && !_roomId) {
+  if (roomId) {
     const db = firebase.firestore();
     const roomRef = db.collection('rooms').doc(roomId);
     const calleeCandidates = await roomRef.collection('calleeCandidates').get();
